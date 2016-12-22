@@ -1,8 +1,0 @@
-Johdanto
--mikä maali
-Toteutus
--mitä tehty
--mitkä ongelmat
-Pohdintaa
- -miten eteenpäin
- -mitä opittiin
