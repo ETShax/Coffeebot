@@ -45,8 +45,8 @@ command_dict[':!quit'] = Quit()
 class Kahvia:
     # tarttee olla yhteys karahkaan
     def main(self, irc, line):
-                os.system('ssh pi@192.168.0.103 "python ~/raspit/harkka/kahvitulos.py "' )
-                os.system('scp pi@192.168.0.103:~/raspit/harkka/kahvitulos.txt .')
+                os.system('ssh user@raspi "python ~/raspit/harkka/kahvitulos.py "' )
+                os.system('scp user@raspi:~/raspit/harkka/kahvitulos.txt .')
         	tulos = open('kahvitulos.txt', 'r')
         	for laini in tulos:
             		irc.send('PRIVMSG %s :%s' % (line[2], laini))
