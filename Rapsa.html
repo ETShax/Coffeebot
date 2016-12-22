@@ -1,0 +1,97 @@
+
+<!--
+   Rapsa.html
+   
+   Copyright 2016  <pi@pepepi>
+   
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2 of the License, or
+   (at your option) any later version.
+   
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+   
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+   MA 02110-1301, USA.
+   
+   
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Raportti IoT kurssin prototyypistä</title>
+	<link href="http://www.w3.org/StyleSheets/Core/Steely.css" rel="StyleSheet" type="text/css" media="all" />
+</head>
+
+<body>
+	<h2>Tekijä: Perttu Rautaniemi</h1h>
+	<h1>Product: Kahvia irkkaajille</h1>
+	<p/>
+	<h2>Suunitelma</h2>
+	<p>Tarkoituksena oli tehdä aivan simppeli kahvipannukamera Raspilla <a href="https://en.wikipedia.org/wiki/Trojan_Room_coffee_pot">muinaisen perinteen</a> mukaan, 
+	käytettäväksi irkkaajille jotka haluavat kattilasta kahvia mutteivät tiedä onko siellä sitä.
+	Tämä oli ilmeisesti kuitenkin liian helppoa joten tietoturvasyistä botti, joka keskustelee
+	irc-verkon kanssa, sijaitsee nyt erillisellä koneella, ja lisäksi suoran kuvan ottaminen on nyt
+	korvattu kahvin määrän tunnistamisella opencvn avulla, mikä osoittautukin haasteeksi koko konseptin ollessa suht uusi. Halusin myös kokeilla botin rakentamista itse valmiin pohjan sijasta, ja tämän vuoksi olen valmis uhraamaan vähän tietoturvapuolta, jonka olisi valmiissa botissa jo yhteisö hionut kuntoon. </p>
+	<h2>Toteutus</h2>
+	<p>Käytin paljolti minulle tutuhkoa kieltä eli pythonia, bottipuolen kanssa leikkimisen ollessa erittäin hauskaa ja inspiroivaa pelleilyä,
+	jonka aikaan samalla opettelin vahingossa muunmuassa multithreadausta ja pohdin verkkoprotokollia, keitin myös erittäin paljon kahvia.<br/>
+	Löysin hyviä ideoita tälle ja päädyin ratkaisuun jossa ihan suoraan socketilta otetaan tekstiä, pilkotaan siitä oleelliset tiedot, ja tämä suoritetaan mainin loputtomassa loopissa kutsumalla aina joka paketille metodia joka tarkistaa onko paketissa käskyä botille. Jos on, siirrytään moduuliin jossa commandit ovat ja suoritettaan sieltä käsky joka on määritelty metodi. Tässä projektin kannalta olennaisessa metodissa sitten taas annetaan käsky raspille SSH yhteydellä, jota varten täytyy olla raspin IP tiedossa. Onnistuu esim kytkemällä raspi suoraan serverikoneeseen kiinni, Tai muilla keinoilla. Itse katsoin nyt kännykästä koska jaoin siitä netin jokaiselle laitteelle.
+	En ollut varma siitä että saako SSHn kautta paluutulosta, ja sen takia tein ihan tulostiedoston joka sitten noudetaan SCPn avulla raspilta, ja luetaan sen jälkeen botin toimesta ja lähetetään ircfeediin.
+	<br/> 
+	Projektista oli hyvä keskustella monien asiantuntevien ihmisten kanssa, sillä kattilaan on jo kauan kaivattu tuota perinteistä verkkokameraa. 
+	Ongelmaksi tässä kohtaa muodostuu lähinnä esittelytilanteen ja teoreettisen lopputuotteen tapahtuminen yliopiston tiloissa,
+	jolloin vaikeuksia aiheuttaa se etten voi esimerkiksi tietää raspini IPtä jotta botti voi pyytää kuvasta käsiteltyä dataa. Ratkaisin ongelman prototyypissä omalla wlanverkolla, mutta tämä ei teoreettista lopputuotetta varten toimi. Joudun mahdollisesti keskustelemaan jonkun henkilön kanssa, joka hallinnoi verkkoja.
+	<br/>Jos käytettävissäni olisi ollut enemmän aikaa olisin varmaan voinut tehdä kahden laitteeni välisestä keskustelusta saumattomampaa ja toivon tulevaisuudessa voivani laittaa suoraan molempien laitteiden pythonkoodit keskustelemaan keskenään ilman bash-komentojen antamista koodilla välissä, mutta aika kertoo onko se edes mahdollista.<p>
+	<p>OpenCV osoittautui aivan liian järeäksi, monipuoliseksi ja fiksuksi laitteeksi minun käyttööni.
+	En selkeästi pohtinut demojen aikana lainkaan tarpeeksi miten opencv3 toimii että olisin osannut jatkokäyttää sitä fiksusti.
+	Nyt tyydyin tekemään ratkaisun joka on erittäin paikkaan ja etäisyyteen sidottu ja tätä tarvitsee hienosäätää skaalan osalta manuaalisesti jos jokin asetelmassa muuttuu.<br/>
+	Eli nyt raspipuoli toimii niin, että sinne tulee SSHn yli käsky "python kahvitulos.py". Tämä alkaa sillä, että raspi ottaa kuvan, tallentaa sen, jonka jälkeen avaa sen numpyn ja opencv kirjastojen ymmärtämäksi objektiksi ja poistaa kuvan. Sitten olen määritellyt ylä- ja ala-raja-arvot mustan kahvin väreille. Tämän jälkeen objektista luodaan maski noilla raja-arvoilla ja tallennetaan se png muodossa, koska jostain syystä seuraavia asioita varten maskiobjektin muuntaminen ei onnistunut helposti ja välituotteen tallentaminen ja sen avaaminen muuntajan läpi oli yksinkertaisin ratkaisu.<br/>
+	Seuraavaksi tästä lasketaan kaikki maskin mustat pikselit ja verrataan pikseleiden kokonaismäärään.
+	Raja-arvot sitten katsoin vertaamalla tyhjän ja täyden pannun kuvaa tietyssä kohdassa ja tämän voi edelleen suorittaa koodilla "coffeemaker.py" jotta uudelleen kalibrointi olisi vähän helpompaa.
+	Skaalasta tein kolmijakoisen ja sitäkin nyt voi sitten säätää ihan miten lystää tulevaisuutta varten. Lähinnä se on siksi tuollainen, että se sietää aika hyvin arvojen vaihteluja, esim pannun mustan kahvan asento yms. Lopuksi sitten raspipuoli luo tiedoston johon se kirjoittaa mille skaalan välille se nyt sattui sitten päätymään ja sulkee tiedoston ja lopettaa itsensä suorittamisen.
+	<br/>
+	Koodin käytännössä ollessa mustan määrän tunnistamista kuvasta, tuleekin heti ongelmia ympäristön mustien esineiden takia. Esimerkiksi oma kahvinkeittimeni on musta ja se peittää pannun taustan aika tehokkaasti, jolloin täytyisi laittaa joku valkoinen paperi tms keittimeen
+	"koristeeksi" että erotus olisi selkeämpi.
+	Ajatuksenani se, että parempi tehdä edes vähemmän optimi prototyyppi kuin jättää koko yritys kesken uuden teknologian aiheuttaessa riskejä. Tulevaisuudessa
+	</p>
+	
+	<h2>Pohdintaa</h2>
+	<p>Projektin edetessä kävi selväksi että vaikka ihmiselle kaikista intuitiivisin tapa todentaa onko pannussa kahvia on visuaalinen,
+	ei se IoT maailmassa ole millään tapaa paras, vaan on ylimääräisen vaikea ja jopa kalliskin jos ajattelee picameran hintaa.	keskusteluissani muiden henkilöiden kanssa paremmiksi ratkaisuiksi selvisi esimerkiksi yhdistelmä lämpötila-anturin ja piezolevyn datasta tai myös virrankulutuksen seuraaminen.<br/> Kuvasta tunnistamisessa olisi signaalinkäsittelyn ja matriisimuutosten osaaminen ollut erittäin suureksi hyödyksi,
+	ja jos syvällisen ymmärtämisen näistä haluaa niin matematiikan osaaminen on erittäinkin olenainen osa.
+	Tietenkin kokenut tekijä osaa kompensoida tiettyjä koneellisella kuvankäsittelyllä esiintulevia ongelmia, kuten ylimääräinen millitarkkuus
+	pikselien RGB värityksessä, mutta jos ei ole kuvankäsittystä kokemusta tästä saa isonkin ongelman itselleen.<br/>
+	Kuitenkin kaikesta huolimatta koin tämän antoisaksi aihealueeksi tutkia ja ihmetellä, sillä muinaisilla ohj2 tai 1 kurssin luennoilla olleilla kuvankäsittelyillä
+	ei vielä ollut henkilökohtaisesti relevanssia kun olin vielä ihan hukassa ylipäätään koko ohjelmoinnin kanssa. Nyt tiedän mistä käyn katsomasta vinkkejä jos tarvitsee
+	itse vielä tehdä temppuja kuville.<br/>
+	Toinen asia mihin tässä nyt suunnitelmasta käydyn keskustelun takia ja siitä seurannneen ihmetyksen ansiosta olen joutunut keskittämään aivonystyröitäni on aihe tietoturvallisuudesta, ja tämä lähti IoT laitteen kytkemisestä julkiseen verkkoon eli IRC-servereihin ja sen suuresta riskistä. En ole vieläkään oikein ymmärtänyt tätä, mutta senverran kuitenkin, että tietoturvan kannalta on aina suuri plussa, jos 
+	IoT laite kommunikoi ja siten näkyy vain ja ainoastaan sisäverkossa tai selkeästi määritellyssä vpn tunnelissa, jotta ylimääräiset henkilöt eivät niin helposti
+	pääse sisälle laitteeseen, sillä esimerkiksi raspista on julkisia haavoittuvuuksia suhteellisen paljon tiedossa, ja ilmeisesti kotien älylaitteista vielä enemmän hyväksikäytettäviä aukkoja. <br/>Tämä yhdistettynä heikkoihin suojauksiin kotiverkoissa tai taivas varjelkoon tälläisten todella reikäisten laitteiden laittamisesta suoraan näkyväksi johkin internetpalveluun, esimerkiksi voisi kuvitella jonkun laitevalmistajan keskusserverin sisältävän hyvinkin paljon dataa siitä, mistä IPstä tietyt älytelkkarit löytyvät ja tälläisen serverin kräkätessään saa aikamoisen listan exploitattavia koneita käyttöönsä.<br/>
+	Kiinnostava ajatus onkin, että miten rakentaa erilaisia turvallisia verkkoja IoT-laittelle, niin että niiden kanssa voisi halutessaan kommunikoida vaikka kiinasta asti, tietoturvan siitä kärsimättä.
+	Oikeastaan voisi olla ihan hyvä ymmärtää että miten IoT-laitteita voi edes käyttää ns pahoihin tarkoituksiin, jos ne ovat kuitenkin jonkin reitittimen takana, jolloin ihan suoraa yhteyttä nyt esimerkiksi jollain älylampulla ei pitäisi olla.<br/>
+
+	Muutin toteutusta ilmeisesti yliopiston sääntöjen takia, keskusteluissa kahvikamerassa tuli siis ilmi,
+	että agoralla ei saisi ottaa kuvaa joka liikkuu mihinkään, jonka takia kuvat ovat tilapäisiä paria mallikuvaa lukuunottamatta,
+	ja poistuvat samantien kun niille on suoritettu operaatiot.
+	Lisäksi ainakin kliinissä ympäristössä softa näyttää toimivan tarpeeksi tarkasti, jotta sen voisi laittaa ns tositesteihin.   
+	
+	</p>
+	<h3>Jatkokehitys</h3>
+	<ul><li>jokin keino siihen että riittää että raspi tietää serverin, eikä serveri raspin</li>
+	<li>tapa tunnistaa ensin kahvipannu, sitten katsoa vain sen sisällä olevat prosentit</li>
+	<li>tietoturva, esim botin parseaminen on erittäin altis uhille, käytännössä muuta moduuliksi sopelille</li>
+	<li>Näiden laitteiden välisen keskustelun tutkiminen ja parantaminen, en ole esim wiresharkilla katsonut mitä dataa liikkuu lähiverkossa</li>
+	</ul>
+</body>
+
+</html>

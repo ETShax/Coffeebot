@@ -1,0 +1,15 @@
+sopel-botti irkkiin joka ottaa käskyn !kahvia, !kahvikuva
+vastaan, ja vastaa kuvalla kahvipannusta tai vihreällä "on kahvia",
+punaisella "ei ole kahvia".
+irkkibotti ei sijaitse raspilla vaan tilaa kuvan ja tiedot siltä.
+
+
+sopel-botti irkkiin joka ottaa käskyn !kahvia, !kahvikuva
+vastaan, ja vastaa kuvalla kahvipannusta tai vihreällä "on kahvia",
+punaisella "ei ole kahvia".
+Jostain syystä raspi ei saisi olla löydettävissä ulkoverkosta joten botti ei aja sillä,
+vaan vanhalla läppärillä joka sitten sisäverkon kautta kyselee raspilta tiedot.
+olenainen opittava asia tässä on ehkäpä omien palveluiden välillä datan siirto ja siksi hyödyllinen
+
+-- pohdintaa in case että olen ymmärtänyt jotain väärin --
+?? miten ihmeessä saa edes google apiin yhteyttä niin ettei joku kiinalainen voi bongata iptä?

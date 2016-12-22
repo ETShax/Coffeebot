@@ -1,0 +1,23 @@
+import cv2
+import picamera
+import numpy as np
+import argparse
+
+img = cv2.imread('kahvi.jpg')
+maski = cv2.imread('kahvimaski.jpg')
+mask = np.zeros(img.shape,dtype=np.uint8)
+
+mustakahvi = [1,0,0]
+laihakahvi = [22,7,4]
+tosilaiha  = [95,32,40]
+tosiharmaa = [57,57,57]
+
+lower = np.array(laihakahvi, dtype="uint8")
+upper = np.array(tosiharmaa, dtype="uint8")
+
+
+#mask = cv2.inRange(img,lower,upper)
+
+output=cv2.bitwise_and(img,img,mask)
+cv2.imshow("images", output)
+cv2.waitKey()
