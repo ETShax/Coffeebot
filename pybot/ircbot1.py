@@ -20,7 +20,7 @@ class Ircbot1:
 
         # määritellään botille pääkäyttäjät
 
-        self.users = [ ':ETS!harbinger@paija.us' ]
+        self.users = [ ':ETS!jotain.jotain' ]
 
         # välttämättömiä tietoja
 
